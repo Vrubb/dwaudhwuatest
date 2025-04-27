@@ -176,6 +176,42 @@ body:active {
     pointer-events: auto; /* Only letters are clickable */
 }
 
+/* Disable ALL text selection + blue highlights */
+body {
+  -webkit-user-select: none;  /* Safari */
+  -moz-user-select: none;     /* Firefox */
+  -ms-user-select: none;      /* IE/Edge */
+  user-select: none;          /* Standard */
+  cursor: grab;
+}
+
+/* Active drag state */
+body:active {
+  cursor: grabbing;
+}
+
+/* Grid container hides overflow */
+.grid-container {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Grid fills space and loops */
+.grid {
+  display: flex;
+  position: absolute;
+  will-change: transform;
+  width: 400vw; /* 4x screen width for seamless looping */
+  height: 400vh; /* 4x screen height for seamless looping */
+}
+
+/* Letters are clickable, no selection */
+.letter {
+  pointer-events: auto;
+  user-select: none;
+}
+
 #time {
     display: block;
     font-size: 14px;
