@@ -1,128 +1,117 @@
-// Configuration
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const COLUMNS = 26; // A-Z columns
-const ROWS = 100;   // Letters per column
-const SCROLL_SPEED = 0.8; // Lower = smoother, slower movement
-const COLUMN_WIDTH = 60; // px
-
-// DOM Elements
-const gridContainer = document.getElementById("grid-container");
-const grid = document.getElementById("grid");
-const popup = document.getElementById("popup");
-const closePopup = document.querySelector(".close-popup");
-
-// State
-let scrollY = 0;
-let targetY = 0;
-let isDragging = false;
-let startY;
-let lastY;
-let velocity = 0;
-let lastTime = 0;
-let columns = [];
-
-// Create the grid
-function createGrid() {
-    grid.innerHTML = "";
-    grid.style.width = `${COLUMNS * COLUMN_WIDTH}px`;
+document.addEventListener('DOMContentLoaded', () => {
+    // Configuration
+    const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const COLUMNS = LETTERS.length;
+    const ROWS = 50;
+    const SCROLL_SPEED = 0.1;
     
-    // Create columns
-    for (let c = 0; c < COLUMNS; c++) {
-        const column = document.createElement("div");
-        column.className = "column";
+    // DOM Elements
+    const gridContainer = document.getElementById('gridContainer');
+    const grid = document.getElementById('grid');
+    const popup = document.getElementById('popup');
+    const closePopup = document.querySelector('.close-popup');
+    
+    // State
+    let scrollY = 0;
+    let targetY = 0;
+    let isDragging = false;
+    let startY = 0;
+    let lastY = 0;
+    let velocity = 0;
+    let animationFrameId = null;
+    
+    // Create grid columns
+    function createGrid() {
+        grid.innerHTML = '';
         
-        // Create letters in column
-        for (let r = 0; r < ROWS; r++) {
-            const letter = document.createElement("div");
-            letter.className = "letter";
-            const letterChar = LETTERS[c]; // Each column gets its own letter
-            letter.textContent = letterChar;
+        for (let c = 0; c < COLUMNS; c++) {
+            const column = document.createElement('div');
+            column.className = 'column';
             
-            // Make "G" clickable
-            if (letterChar === "G") {
-                letter.style.opacity = "1";
-                letter.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    popup.classList.add("active");
-                });
+            for (let r = 0; r < ROWS; r++) {
+                const letter = document.createElement('div');
+                letter.className = 'letter';
+                letter.textContent = LETTERS[c];
+                
+                if (LETTERS[c] === 'G') {
+                    letter.addEventListener('click', () => {
+                        popup.classList.add('active');
+                    });
+                }
+                
+                column.appendChild(letter);
             }
             
-            column.appendChild(letter);
+            grid.appendChild(column);
         }
-        
-        grid.appendChild(column);
-        columns.push(column);
     }
-}
-
-// Handle smooth scrolling with momentum
-function updateScroll(timestamp) {
-    if (!lastTime) lastTime = timestamp;
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
     
-    if (isDragging) {
-        velocity = (targetY - lastY) / deltaTime * 1000;
-        lastY = targetY;
-    } else {
+    // Smooth scroll animation
+    function animate() {
+        // Apply easing
+        scrollY += (targetY - scrollY) * SCROLL_SPEED;
+        
+        // Apply scroll to grid
+        grid.style.transform = `translate(-50%, ${scrollY}px)`;
+        
+        animationFrameId = requestAnimationFrame(animate);
+    }
+    
+    // Handle mouse down
+    function handleMouseDown(e) {
+        isDragging = true;
+        startY = e.clientY;
+        lastY = e.clientY;
+        targetY = scrollY;
+        document.body.style.cursor = 'grabbing';
+        
+        // Cancel any existing animation
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+    }
+    
+    // Handle mouse move
+    function handleMouseMove(e) {
+        if (!isDragging) return;
+        
+        const deltaY = e.clientY - lastY;
+        targetY += deltaY;
+        lastY = e.clientY;
+        velocity = deltaY;
+    }
+    
+    // Handle mouse up
+    function handleMouseUp() {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        document.body.style.cursor = 'grab';
+        
         // Apply momentum
-        velocity *= 0.95;
-        targetY += velocity * deltaTime / 1000;
+        targetY += velocity * 10;
         
-        // Apply rubber band effect at boundaries
-        if (targetY > 0) {
-            targetY = targetY * 0.3;
-        } else if (targetY < -grid.clientHeight + gridContainer.clientHeight) {
-            const overflow = targetY - (-grid.clientHeight + gridContainer.clientHeight);
-            targetY = -grid.clientHeight + gridContainer.clientHeight + overflow * 0.3;
-        }
+        // Start animation
+        animate();
     }
     
-    // Apply easing to scroll
-    scrollY += (targetY - scrollY) * SCROLL_SPEED;
+    // Initialize
+    function init() {
+        createGrid();
+        
+        // Event listeners
+        gridContainer.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mouseleave', handleMouseUp);
+        
+        closePopup.addEventListener('click', () => {
+            popup.classList.remove('active');
+        });
+        
+        // Start animation
+        animate();
+    }
     
-    // Apply scroll to grid
-    grid.style.transform = `translateY(${scrollY}px)`;
-    
-    requestAnimationFrame(updateScroll);
-}
-
-// Drag event handlers
-function handleMouseDown(e) {
-    isDragging = true;
-    startY = e.clientY;
-    lastY = e.clientY;
-    targetY = scrollY;
-    document.body.style.cursor = "grabbing";
-}
-
-function handleMouseMove(e) {
-    if (!isDragging) return;
-    const deltaY = e.clientY - lastY;
-    targetY += deltaY;
-    lastY = e.clientY;
-}
-
-function handleMouseUp() {
-    isDragging = false;
-    document.body.style.cursor = "grab";
-}
-
-// Event listeners
-gridContainer.addEventListener("mousedown", handleMouseDown);
-document.addEventListener("mousemove", handleMouseMove);
-document.addEventListener("mouseup", handleMouseUp);
-document.addEventListener("mouseleave", handleMouseUp);
-
-closePopup.addEventListener("click", () => {
-    popup.classList.remove("active");
+    init();
 });
-
-// Prevent text selection during drag
-document.addEventListener("selectstart", (e) => {
-    if (isDragging) e.preventDefault();
-});
-
-// Initialize
-createGrid();
-requestAnimationFrame(updateScroll);
