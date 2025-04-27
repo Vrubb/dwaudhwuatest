@@ -1,11 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     // Configuration
     const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const COLUMNS = 100; // Enough columns for infinite feel
-    const ROWS = 100;    // Enough rows for infinite feel
-    const SCROLL_SPEED = 0.08;
-    const COLUMN_WIDTH = 60;
-    const ROW_HEIGHT = 60;
+    const COLUMN_COUNT = 26; // A-Z columns
+    const ROW_COUNT = 100;   // Rows per column
+    const SCROLL_SPEED = 0.1;
     
     // DOM Elements
     const gridContainer = document.getElementById('gridContainer');
@@ -20,31 +18,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetY = 0;
     let isDragging = false;
     let startX, startY;
-    let animationFrameId = null;
+    let animationId = null;
     
     // Create grid
     function createGrid() {
         grid.innerHTML = '';
         
-        // Make grid large enough for infinite feeling
-        grid.style.width = `${COLUMNS * COLUMN_WIDTH}px`;
-        grid.style.height = `${ROWS * ROW_HEIGHT}px`;
-        
-        // Create repeating A-Z pattern
-        for (let c = 0; c < COLUMNS; c++) {
+        // Create columns
+        for (let c = 0; c < COLUMN_COUNT; c++) {
             const column = document.createElement('div');
             column.className = 'column';
             
-            for (let r = 0; r < ROWS; r++) {
+            // Create rows
+            for (let r = 0; r < ROW_COUNT; r++) {
                 const letter = document.createElement('div');
                 letter.className = 'letter';
-                const letterIndex = (c + r) % LETTERS.length;
-                letter.textContent = LETTERS[letterIndex];
+                letter.textContent = LETTERS[c]; // Each column gets its own letter
                 
                 // Make "G" interactive
-                if (letter.textContent === 'G') {
+                if (LETTERS[c] === 'G') {
                     letter.style.opacity = '1';
-                    letter.addEventListener('click', (e) => {
+                    letter.addEventListener('click', function(e) {
                         e.stopPropagation();
                         popup.classList.add('active');
                     });
@@ -57,32 +51,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Handle smooth scrolling with boundaries
-    function updateScroll() {
+    // Animation loop
+    function animate() {
         // Apply easing
         scrollX += (targetX - scrollX) * SCROLL_SPEED;
         scrollY += (targetY - scrollY) * SCROLL_SPEED;
         
-        // Apply scroll to grid
+        // Apply transform
         grid.style.transform = `translate(${scrollX}px, ${scrollY}px)`;
         
-        animationFrameId = requestAnimationFrame(updateScroll);
+        animationId = requestAnimationFrame(animate);
     }
     
-    // Handle mouse down
+    // Event handlers
     function handleMouseDown(e) {
         isDragging = true;
         startX = e.clientX - scrollX;
         startY = e.clientY - scrollY;
         document.body.style.cursor = 'grabbing';
         
-        // Cancel any existing animation
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
+        if (animationId) {
+            cancelAnimationFrame(animationId);
         }
     }
     
-    // Handle mouse move
     function handleMouseMove(e) {
         if (!isDragging) return;
         
@@ -90,13 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
         targetY = e.clientY - startY;
     }
     
-    // Handle mouse up
     function handleMouseUp() {
         isDragging = false;
         document.body.style.cursor = 'grab';
-        
-        // Restart animation
-        updateScroll();
+        animate();
     }
     
     // Initialize
@@ -109,12 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mouseup', handleMouseUp);
         document.addEventListener('mouseleave', handleMouseUp);
         
-        closePopup.addEventListener('click', () => {
+        closePopup.addEventListener('click', function() {
             popup.classList.remove('active');
         });
         
-        // Start animation
-        updateScroll();
+        animate();
     }
     
     init();
