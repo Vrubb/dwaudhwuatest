@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Configuration
     const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const COLUMNS = LETTERS.length;
-    const ROWS = 50;
-    const SCROLL_SPEED = 0.1;
+    const COLUMNS = 100; // Enough columns for infinite feel
+    const ROWS = 100;    // Enough rows for infinite feel
+    const SCROLL_SPEED = 0.08;
+    const COLUMN_WIDTH = 60;
+    const ROW_HEIGHT = 60;
     
     // DOM Elements
     const gridContainer = document.getElementById('gridContainer');
@@ -12,18 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const closePopup = document.querySelector('.close-popup');
     
     // State
+    let scrollX = 0;
     let scrollY = 0;
+    let targetX = 0;
     let targetY = 0;
     let isDragging = false;
-    let startY = 0;
-    let lastY = 0;
-    let velocity = 0;
+    let startX, startY;
     let animationFrameId = null;
     
-    // Create grid columns
+    // Create grid
     function createGrid() {
         grid.innerHTML = '';
         
+        // Make grid large enough for infinite feeling
+        grid.style.width = `${COLUMNS * COLUMN_WIDTH}px`;
+        grid.style.height = `${ROWS * ROW_HEIGHT}px`;
+        
+        // Create repeating A-Z pattern
         for (let c = 0; c < COLUMNS; c++) {
             const column = document.createElement('div');
             column.className = 'column';
@@ -31,10 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let r = 0; r < ROWS; r++) {
                 const letter = document.createElement('div');
                 letter.className = 'letter';
-                letter.textContent = LETTERS[c];
+                const letterIndex = (c + r) % LETTERS.length;
+                letter.textContent = LETTERS[letterIndex];
                 
-                if (LETTERS[c] === 'G') {
-                    letter.addEventListener('click', () => {
+                // Make "G" interactive
+                if (letter.textContent === 'G') {
+                    letter.style.opacity = '1';
+                    letter.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         popup.classList.add('active');
                     });
                 }
@@ -46,23 +57,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Smooth scroll animation
-    function animate() {
+    // Handle smooth scrolling with boundaries
+    function updateScroll() {
         // Apply easing
+        scrollX += (targetX - scrollX) * SCROLL_SPEED;
         scrollY += (targetY - scrollY) * SCROLL_SPEED;
         
         // Apply scroll to grid
-        grid.style.transform = `translate(-50%, ${scrollY}px)`;
+        grid.style.transform = `translate(${scrollX}px, ${scrollY}px)`;
         
-        animationFrameId = requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(updateScroll);
     }
     
     // Handle mouse down
     function handleMouseDown(e) {
         isDragging = true;
-        startY = e.clientY;
-        lastY = e.clientY;
-        targetY = scrollY;
+        startX = e.clientX - scrollX;
+        startY = e.clientY - scrollY;
         document.body.style.cursor = 'grabbing';
         
         // Cancel any existing animation
@@ -75,24 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleMouseMove(e) {
         if (!isDragging) return;
         
-        const deltaY = e.clientY - lastY;
-        targetY += deltaY;
-        lastY = e.clientY;
-        velocity = deltaY;
+        targetX = e.clientX - startX;
+        targetY = e.clientY - startY;
     }
     
     // Handle mouse up
     function handleMouseUp() {
-        if (!isDragging) return;
-        
         isDragging = false;
         document.body.style.cursor = 'grab';
         
-        // Apply momentum
-        targetY += velocity * 10;
-        
-        // Start animation
-        animate();
+        // Restart animation
+        updateScroll();
     }
     
     // Initialize
@@ -110,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Start animation
-        animate();
+        updateScroll();
     }
     
     init();
