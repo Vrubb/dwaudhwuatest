@@ -1,13 +1,28 @@
-/* Base Styles */
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background: #000;
     color: #fff;
-    margin: 0;
-    overflow-x: hidden;
+    overflow: hidden;
+    height: 100vh;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: grab;
 }
 
-/* Top Navigation */
+body:active {
+    cursor: grabbing;
+}
+
+/* Navigation */
 .top-nav {
     position: fixed;
     top: 20px;
@@ -23,196 +38,87 @@ body {
     display: inline-block;
 }
 
-/* Infinite A-Z Grid */
+/* Grid Container */
 .grid-container {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    position: relative;
 }
 
 .grid {
-    display: flex;
     position: absolute;
+    display: flex;
     will-change: transform;
 }
 
 .column {
     display: flex;
     flex-direction: column;
-    padding: 0 20px;
+    padding: 0 2vw;
 }
 
 .letter {
     font-size: 5vw;
     font-weight: 700;
+    margin: 1vh 0;
     opacity: 0.7;
     transition: opacity 0.3s;
-    margin: 10px 0;
-    cursor: pointer;
+    pointer-events: auto;
 }
 
 .letter:hover {
     opacity: 1;
 }
 
-/* Grid Layout */
-.grid-container {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-}
-
-.grid {
-    display: flex;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.column {
-    display: flex;
-    flex-direction: column;
-    padding: 0 20px;
-}
-
-.letter {
-    font-size: 5vw;
-    font-weight: 700;
-    margin: 10px 0;
-    cursor: pointer;
-}
-
-/* Popup */
+/* Popup Styles */
 .popup {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: black;
-    border: 1px solid white;
-    padding: 20px;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid #fff;
+    padding: 30px;
+    max-width: 80vw;
     display: none;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .popup.active {
     display: block;
 }
 
+.popup h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.popup-links {
+    display: flex;
+    flex-direction: column;
+}
+
 .popup-link {
-    color: white;
-    display: block;
+    color: #fff;
+    font-size: 1.5rem;
     margin: 10px 0;
     text-decoration: none;
+    transition: color 0.3s;
 }
 
-/* GNX Page Styles */
-.record-player {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70vh;
+.popup-link:hover {
+    color: #ccc;
 }
 
-.record-player img {
-    max-width: 300px;
-    animation: spin 10s linear infinite;
-    animation-play-state: paused;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.music-player {
-    position: fixed;
-    bottom: 50px;
-    left: 0;
-    right: 0;
-    text-align: center;
-}
-
-.controls button {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 20px;
-    margin: 0 10px;
+.close-popup {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5rem;
     cursor: pointer;
 }
-
-#progress-bar {
-    width: 300px;
-    margin: 10px;
-}
-
-/* Disable text selection/highlighting */
-body {
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE/Edge */
-    user-select: none;
-    cursor: grab;
-}
-
-body:active {
-    cursor: grabbing;
-}
-
-/* Infinite grid - hide overflow */
-.grid-container {
-    overflow: hidden;
-}
-
-/* Reset default drag behavior */
-.grid {
-    pointer-events: none;
-}
-
-.letter {
-    pointer-events: auto; /* Only letters are clickable */
-}
-
-/* Disable ALL text selection + blue highlights */
-body {
-  -webkit-user-select: none;  /* Safari */
-  -moz-user-select: none;     /* Firefox */
-  -ms-user-select: none;      /* IE/Edge */
-  user-select: none;          /* Standard */
-  cursor: grab;
-}
-
-/* Active drag state */
-body:active {
-  cursor: grabbing;
-}
-
-/* Grid container hides overflow */
-.grid-container {
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-}
-
-/* Grid fills space and loops */
-.grid {
-  display: flex;
-  position: absolute;
-  will-change: transform;
-  width: 400vw; /* 4x screen width for seamless looping */
-  height: 400vh; /* 4x screen height for seamless looping */
-}
-
-/* Letters are clickable, no selection */
-.letter {
-  pointer-events: auto;
-  user-select: none;
-}
-
-#time {
-    display: block;
     font-size: 14px;
 }
