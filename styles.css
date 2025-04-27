@@ -1,0 +1,139 @@
+/* Base Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #000;
+    color: #fff;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Top Navigation */
+.top-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.nav-btn {
+    color: #fff;
+    font-size: 24px;
+    margin-left: 15px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Infinite A-Z Grid */
+.grid-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.grid {
+    display: flex;
+    position: absolute;
+    will-change: transform;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+}
+
+.letter {
+    font-size: 5vw;
+    font-weight: 700;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.letter:hover {
+    opacity: 1;
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid #fff;
+    padding: 20px;
+    max-width: 80vw;
+    display: none;
+    z-index: 100;
+}
+
+.popup.active {
+    display: block;
+}
+
+.popup-link {
+    color: #fff;
+    display: block;
+    margin: 10px 0;
+    text-decoration: none;
+}
+
+.popup-link:hover {
+    text-decoration: underline;
+}
+
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+/* GNX Page Styles */
+.record-player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+
+.record-player img {
+    max-width: 300px;
+    animation: spin 10s linear infinite;
+    animation-play-state: paused;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.music-player {
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.controls button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+#progress-bar {
+    width: 300px;
+    margin: 10px;
+}
+
+#time {
+    display: block;
+    font-size: 14px;
+}
