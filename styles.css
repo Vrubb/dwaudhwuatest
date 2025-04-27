@@ -149,6 +149,33 @@ body {
     margin: 10px;
 }
 
+/* Disable text selection/highlighting */
+body {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+    user-select: none;
+    cursor: grab;
+}
+
+body:active {
+    cursor: grabbing;
+}
+
+/* Infinite grid - hide overflow */
+.grid-container {
+    overflow: hidden;
+}
+
+/* Reset default drag behavior */
+.grid {
+    pointer-events: none;
+}
+
+.letter {
+    pointer-events: auto; /* Only letters are clickable */
+}
+
 #time {
     display: block;
     font-size: 14px;
